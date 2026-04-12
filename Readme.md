@@ -10,29 +10,20 @@
 
 ## 📌 專案介紹
 
-本專案為一個基於 **Spring Boot** 的入門練習專案，  
-透過 RESTful API 實現完整的 CRUD 操作，並與資料庫整合。
-
-主要學習目標：
-
-* 熟悉 Spring Boot 專案架構  
-* 建立 RESTful API (Create/Read/Update/Delete)  
-* 與資料庫整合 (JPA / Hibernate)  
-* Maven 專案管理
+本專案為一個基於 **Spring Boot** 建立的後端練習專案，  
+透過 RESTful API 提供幣別（Currency）資料的 CRUD 操作，並整合資料庫與測試架構。
 
 ---
 
 ## 🚀 功能說明
-
-* API 功能一覽：
 
 | HTTP 方法 | 路徑 | 說明 |
 |-----------|------|------|
 | GET       | `/currencies` | 取得所有幣別資料 |
 | GET       | `/currencies/{code}` | 取得指定幣別資料 |
 | POST      | `/currencies` | 新增幣別資料 |
-| PUT       | `/currencies` | 更新指定幣別資料 |
-| DELETE    | `/currencies/{code}` | 刪除指定幣別資料 |
+| PUT       | `/currencies` | 更新幣別資料 |
+| DELETE    | `/currencies/{code}` | 刪除幣別資料 |
 
 ---
 
@@ -40,34 +31,80 @@
 
 * Java 21  
 * Spring Boot 3.5.4  
-* Maven  
+* Spring Web  
 * Spring Data JPA  
-* Microsoft SQL Server
+* Maven  
+* Microsoft SQL Server  
+* JUnit 5  
+
+---
+
+## 🧪 測試設計
+
+本專案包含完整測試架構，確保程式品質與功能正確性。
+
+### 🔹 單元測試（Unit Test）
+針對 Service 層進行邏輯驗證，不依賴 Spring Boot 完整環境或資料庫。
+
+- 測試商業邏輯正確性
+- 使用 JUnit 5
+- 執行快速、獨立
+
+範例：
+- `CurrencyServiceTest`
+
+---
+
+### 🔸 整合測試（Integration Test）
+驗證完整系統流程，包含 Controller → Service → Repository。
+
+- 啟動 Spring Boot Application Context
+- 可搭配測試資料庫設定（application-test.yml）
+- 驗證 API 行為與資料庫整合
+
+範例：
+- `CurrencyIntegrationTest`
 
 ---
 
 ## 📂 專案結構
 
 ```text
-src/
-└── main/
-    ├── java/
-    │   └── training/
-    │       └── web/
-    │           ├── controller/
-    │           │   └── CurrencyController.java
-    │           ├── entity/
-    │           │   └── Currency.java
-    │           ├── repository/
-    │           │   └── CurrencyRepository.java
-    │           ├── Hello.java
-    │           └── Point.java
-    └── resources/
-        ├── application.yml
-        └── static/
-            ├── imgs/
-            └── test.html
+JAVA.SPRING.BOOT/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── training/web/
+│   │   │       ├── controller/
+│   │   │       │   └── CurrencyController.java
+│   │   │       ├── entity/
+│   │   │       │   └── Currency.java
+│   │   │       ├── repository/
+│   │   │       │   └── CurrencyRepository.java
+│   │   │       ├── service/
+│   │   │       │   ├── CurrencyService.java
+│   │   │       │   └── Hello.java
+│   │   └── resources/
+│   │       └── application.yml
+│   │
+│   ├── test/
+│   │   ├── java/
+│   │   │   └── training/web/
+│   │   │       ├── unit/
+│   │   │       │   └── CurrencyServiceTest.java
+│   │   │       └── integration/
+│   │   │           └── CurrencyIntegrationTest.java
+│   │   └── resources/
+│   │       └── application-test.yml
+│
+│   └── static/
+│       ├── imgs/
+│       └── test.html
+│
+├── pom.xml
+└── README.md
 ```
+---
 
 ## 📖 學習重點
 
@@ -87,13 +124,6 @@ src/
 
 - **Spring Boot 與 SQL Server 連線設定**  
   - application.yml 設定資料庫連線、JPA 參數與 Hibernate 行為
-
----
-
-## 🎯 未來可擴展
-
-* 增加驗證與授權 (Spring Security)
-* 測試套件整合 (JUnit)
 
 ---
 

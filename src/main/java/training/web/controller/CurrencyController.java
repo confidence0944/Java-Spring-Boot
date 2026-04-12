@@ -4,59 +4,45 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import training.web.entity.Currency;
-import training.web.repository.CurrencyRepository;
+import training.web.service.CurrencyService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/currencies")
 public class CurrencyController {
 
     @Autowired
-    private CurrencyRepository currencyRepository;
+    private CurrencyService currencyService;
 
     // 取得所有幣別資料
     @GetMapping
     public List<Currency> getAllCurrencies() {
-        return currencyRepository.findAll();
+        return currencyService.getAllCurrencies();
     }
 
     // --- 取得單一幣別 ---
-    @GetMapping("/{code}")
-    public ResponseEntity<Currency> getCurrencyByCode(@PathVariable String code) {
-        Optional<Currency> currency = currencyRepository.findById(code);
-        return currency.map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{id}")
+    public Currency getCurrency(@PathVariable String id) {
+        return currencyService.getById(id);
     }
 
     // --- 新增幣別 ---
     @PostMapping
-    public ResponseEntity<Currency> createCurrency(@RequestBody Currency currency) {
-        if(currencyRepository.existsById(currency.getCode())) {
-            return ResponseEntity.badRequest().build();
-        }
-        Currency saved = currencyRepository.save(currency);
-        return ResponseEntity.ok(saved);
+    public Currency createCurrency(@RequestBody Currency currency) {
+        return currencyService.createCurrency(currency);
     }
 
     // --- 更新幣別 ---
     @PutMapping
-    public ResponseEntity<Currency> updateCurrency(@RequestBody Currency currency) {
-        if(!currencyRepository.existsById(currency.getCode())) {
-            return ResponseEntity.notFound().build();
-        }
-        Currency updated = currencyRepository.save(currency);
-        return ResponseEntity.ok(updated);
+    public Currency updateCurrency(@RequestBody Currency currency) {
+        return currencyService.updateCurrency(currency);
     }
 
     // --- 刪除幣別 ---
-    @DeleteMapping("/{code}")
-    public ResponseEntity<String> deleteCurrency(@PathVariable String code) {
-        if(!currencyRepository.existsById(code)) {
-            return ResponseEntity.notFound().build();
-        }
-        currencyRepository.deleteById(code);
-        return ResponseEntity.ok(code);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCurrency(@PathVariable String id) {
+        currencyService.deleteCurrency(id);
+        return ResponseEntity.ok("Deleted successfully: " + id);
     }
 }

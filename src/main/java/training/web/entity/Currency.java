@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "TB_Currency", schema = "dbo")
+@Table(name = "TB_Currency")
 public class Currency {
 
     @Id
@@ -20,6 +20,7 @@ public class Currency {
     public String getCode() {
         return code;
     }
+
     public void setCode(String code) {
         this.code = code;
     }
@@ -27,6 +28,7 @@ public class Currency {
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
