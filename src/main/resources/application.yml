@@ -14,6 +14,14 @@ spring:
       hibernate:
         format_sql: true
     database-platform: org.hibernate.dialect.SQLServerDialect
+mqtt:
+  url: tcp://localhost:1883
+  client-id: springboot-consumer
+  username: guest
+  password: guest
+  topic: test/topic
+  enabled: false
 server:
+  port: 8085
   error:
     include-message: always

@@ -4,6 +4,7 @@
   <img src="https://img.shields.io/badge/Java-21-red?style=for-the-badge&logo=openjdk&logoColor=white"/>
   <img src="https://img.shields.io/badge/Spring%20Boot-3.5.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
   <img src="https://img.shields.io/badge/Maven-Build-blue?style=for-the-badge&logo=apachemaven&logoColor=white"/>
+  <img src="https://img.shields.io/badge/RabbitMQ-MQTT-orange?style=for-the-badge&logo=rabbitmq&logoColor=white"/>
 </p>
 
 ---
@@ -11,7 +12,14 @@
 ## 📌 專案介紹
 
 本專案為一個基於 **Spring Boot** 建立的後端練習專案，  
-透過 RESTful API 提供幣別（Currency）資料的 CRUD 操作，並整合資料庫與測試架構。
+透過 RESTful API 提供幣別（Currency）資料 CRUD 操作，  
+並整合：
+
+- Microsoft SQL Server
+- MQTT 非同步訊息處理
+- RabbitMQ MQTT Broker
+- 排程任務（Scheduler）
+- 單元測試與整合測試
 
 ---
 
@@ -27,15 +35,66 @@
 
 ---
 
+## 🔸 MQTT 功能
+
+- MQTT Publisher 發送訊息
+- MQTT Subscriber 訂閱 Topic
+- RabbitMQ MQTT Plugin 作為 MQTT Broker
+
+## 🔹 排程功能（Scheduler）
+
+使用 Spring Scheduler 定時執行背景任務：
+
+- 自動發送 MQTT 訊息
+- 定時同步資料
+- 背景批次處理
+
+範例：
+
+```text
+CurrencyJob.java
+```
+
+---
+
 ## 🛠️ 使用技術
 
-* Java 21  
-* Spring Boot 3.5.4  
-* Spring Web  
-* Spring Data JPA  
-* Maven  
-* Microsoft SQL Server  
-* JUnit 5  
+- Java 21
+- Spring Boot 3.5.4
+- Spring Web
+- Spring Data JPA
+- Spring Scheduler
+- MQTT
+- RabbitMQ
+- Maven
+- Microsoft SQL Server
+- JUnit 5 
+
+---
+
+## 🏗️ 系統架構
+
+```text
+Client
+   ↓
+REST API (Controller)
+   ↓
+Service Layer
+   ↓
+Repository (JPA)
+   ↓
+SQL Server
+
+MQTT Publisher
+   ↓
+RabbitMQ MQTT Broker
+   ↓
+MQTT Subscriber
+
+Scheduler Job
+   ↓
+自動發送 MQTT 訊息 / 同步資料
+```
 
 ---
 
@@ -75,34 +134,57 @@ JAVA.SPRING.BOOT/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── training/web/
+│   │   │       ├── config/
+│   │   │       │   ├── MqttConfig.java
+│   │   │       │   ├── MqttProperties.java
+│   │   │       │   └── MqttPublisher.java
+│   │   │       │
 │   │   │       ├── controller/
 │   │   │       │   └── CurrencyController.java
+│   │   │       │
+│   │   │       ├── dto/
+│   │   │       │   └── CurrencyMessageDto.java
+│   │   │       │
 │   │   │       ├── entity/
 │   │   │       │   └── Currency.java
+│   │   │       │
+│   │   │       ├── job/
+│   │   │       │   └── CurrencyJob.java
+│   │   │       │
+│   │   │       ├── mqtt/
+│   │   │       │   └── CurrencyConsumerHandler.java
+│   │   │       │
 │   │   │       ├── repository/
 │   │   │       │   └── CurrencyRepository.java
+│   │   │       │
 │   │   │       ├── service/
-│   │   │       │   ├── CurrencyService.java
-│   │   │       │   └── Hello.java
+│   │   │       │   └── CurrencyService.java
+│   │   │       │
+│   │   │       └── Hello.java
+│   │   │
 │   │   └── resources/
 │   │       └── application.yml
 │   │
 │   ├── test/
 │   │   ├── java/
 │   │   │   └── training/web/
-│   │   │       ├── unit/
-│   │   │       │   └── CurrencyServiceTest.java
-│   │   │       └── integration/
-│   │   │           └── CurrencyIntegrationTest.java
+│   │   │       ├── integration/
+│   │   │       │   └── CurrencyIntegrationTest.java
+│   │   │       │
+│   │   │       └── service/
+│   │   │           └── CurrencyServiceTest.java
+│   │   │
 │   │   └── resources/
 │   │       └── application-test.yml
-│
+│   │
 │   └── static/
 │       ├── imgs/
 │       └── test.html
 │
+├── target/
+├── .gitignore
 ├── pom.xml
-└── README.md
+└── Readme.md
 ```
 ---
 
@@ -116,6 +198,12 @@ JAVA.SPRING.BOOT/
   - 使用 `@Table` 與 `@Column` 設定表格名稱與欄位名稱  
   - Spring Data Repository 操作資料庫 (CrudRepository、findById、save、deleteById)  
   - Hibernate 自動處理 SQL 查詢與交易管理  
+
+- **MQTT 非同步訊息處理**
+  - MQTT Publisher 發送訊息
+  - MQTT Subscriber 接收訊息
+  - RabbitMQ MQTT Plugin 作為 Broker
+  - Event Driven 非同步架構
 
 - **Maven 專案管理**  
   - 自動下載與管理專案依賴套件 (Spring Boot、SQL Server Driver 等)  

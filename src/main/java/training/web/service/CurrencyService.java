@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import training.web.dto.CurrencyMessageDto;
 import training.web.entity.Currency;
 import training.web.repository.CurrencyRepository;
 
@@ -52,5 +53,17 @@ public class CurrencyService {
         }
 
         currencyRepository.deleteById(id);
+    }
+
+    public void SaveCurrency(CurrencyMessageDto currency) {
+        if (currencyRepository.existsById(currency.getCode())) {
+            System.out.println("Currency Code is exist: " + currency.getCode());
+            return;
+        }
+        Currency entity = new Currency();
+        entity.setCode(currency.getCode());
+        entity.setName(currency.getName());
+
+        currencyRepository.save(entity);
     }
 }
