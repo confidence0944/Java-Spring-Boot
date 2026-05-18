@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=Practice;encrypt=true;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost;instanceName=SQLEXPRESS;databaseName=Practice;encrypt=false;trustServerCertificate=true
     username: money
     password: money0816
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

@@ -1,6 +1,5 @@
 package training.web.mqtt;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +11,13 @@ import training.web.service.CurrencyService;
 @Component
 public class CurrencyConsumerHandler {
 
-    @Autowired
-    private CurrencyService currencyService;
+    private final CurrencyService currencyService;    
+    private final ObjectMapper objectMapper;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public CurrencyConsumerHandler(ObjectMapper objectMapper,CurrencyService currencyService) {
+        this.objectMapper = objectMapper;
+        this.currencyService = currencyService;
+    }   
 
     @ServiceActivator(inputChannel = "mqttInputChannel") // 要接收哪個 Channel 的訊息
     public void receive(String payload) {

@@ -1,12 +1,14 @@
 package training.web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import training.web.dto.CurrencyMessageDto;
+import training.web.dto.CurrencyRequestDto;
+import training.web.dto.CurrencyResponseDto;
 import training.web.entity.Currency;
+import training.web.exception.DuplicateEntityException;
+import training.web.exception.EntityNotFoundException;
+import training.web.mapper.CurrencyMapper;
 import training.web.repository.CurrencyRepository;
 
 import java.util.List;
@@ -17,39 +19,44 @@ public class CurrencyService {
     @Autowired
     private CurrencyRepository currencyRepository;
 
-    public List<Currency> getAllCurrencies() {
-        return currencyRepository.findAll();
+    @Autowired
+    private CurrencyMapper mapper;
+
+    public List<CurrencyResponseDto> getAllCurrencies() {
+        return currencyRepository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
-    public Currency getById(String id) {
-        return currencyRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Currency not found: %s".formatted(id)));
+    public CurrencyResponseDto getById(String id) {
+        Currency entity = currencyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Currency not found: " + id));
+
+        return mapper.toDto(entity);
     }
 
-    public Currency createCurrency(Currency currency) {
-        if (currencyRepository.existsById(currency.getCode())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Currency already exists: %s".formatted(currency.getCode()));
+    public CurrencyResponseDto createCurrency(CurrencyRequestDto dto) {
+        if (currencyRepository.existsById(dto.getCode())) {
+            throw new DuplicateEntityException("Currency already exists: " + dto.getCode());
         }
-        return currencyRepository.save(currency);
+        Currency saved = currencyRepository.save(mapper.toEntity(dto));
+        return mapper.toDto(saved);
     }
 
-    public Currency updateCurrency(Currency currency) {
-        if (!currencyRepository.existsById(currency.getCode())) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Currency not found: %s".formatted(currency.getCode()));
+    public CurrencyResponseDto updateCurrency(CurrencyRequestDto dto) {
+
+        if (!currencyRepository.existsById(dto.getCode())) {
+            throw new EntityNotFoundException("Currency not found: " + dto.getCode());
         }
 
-        return currencyRepository.save(currency);
+        Currency saved = currencyRepository.save(mapper.toEntity(dto));
+        return mapper.toDto(saved);
     }
 
     public void deleteCurrency(String id) {
         if (!currencyRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Currency not found: %s".formatted(id));
+            throw new EntityNotFoundException("Currency not found: " + id);
         }
 
         currencyRepository.deleteById(id);

@@ -9,15 +9,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.web.servlet.MockMvc;
 
+import training.web.dto.CurrencyResponseDto;
 import training.web.entity.Currency;
 import training.web.repository.CurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ class CurrencyApiIntegrationTest {
 
         String json = result.getResponse().getContentAsString();
 
-        List<Currency> datas = mapper.readValue(json, new TypeReference<List<Currency>>() {
+        List<CurrencyResponseDto> datas = mapper.readValue(json, new TypeReference<List<CurrencyResponseDto>>() {
         });
 
         assertEquals(3, datas.size());
@@ -102,5 +102,26 @@ class CurrencyApiIntegrationTest {
 
         assertNotNull(saved);
         assertEquals("日幣", saved.getName());
+    }
+
+    @Test
+    void get_currency_by_id_should_return_404() throws Exception {
+        mockMvc.perform(get("/currencies/INVALID"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void create_duplicate_currency_should_return_conflict() throws Exception {
+        String json = """
+                {
+                    "code": "USD",
+                    "name": "US Dollar"
+                }
+                """;
+
+        mockMvc.perform(post("/currencies")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(json))
+                .andExpect(status().isConflict());
     }
 }

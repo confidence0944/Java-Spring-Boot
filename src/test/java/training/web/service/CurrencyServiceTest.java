@@ -5,10 +5,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
+import training.web.dto.CurrencyRequestDto;
+import training.web.dto.CurrencyResponseDto;
 import training.web.entity.Currency;
+import training.web.exception.EntityNotFoundException;
+import training.web.mapper.CurrencyMapper;
+import training.web.exception.DuplicateEntityException;
 import training.web.repository.CurrencyRepository;
 
 import java.util.Optional;
@@ -22,103 +25,144 @@ class CurrencyServiceTest {
     @Mock
     private CurrencyRepository currencyRepository;
 
+    @Mock
+    private CurrencyMapper mapper;
+
     @InjectMocks
     private CurrencyService currencyService;
 
+    // =========================
+    // GET BY ID
+    // =========================
     @Test
-    void getById_shouldReturnCurrency() {
-        Currency currency = new Currency();
-        currency.setCode("USD");
-        currency.setName("US Dollar");
+    void getById_shouldReturnDto() {
+
+        Currency entity = new Currency();
+        entity.setCode("USD");
+        entity.setName("US Dollar");
+
+        CurrencyResponseDto dto = new CurrencyResponseDto();
+        dto.setCode("USD");
+        dto.setName("US Dollar");
 
         when(currencyRepository.findById("USD"))
-                .thenReturn(Optional.of(currency));
+                .thenReturn(Optional.of(entity));
 
-        Currency result = currencyService.getById("USD");
+        when(mapper.toDto(entity))
+                .thenReturn(dto);
+
+        CurrencyResponseDto result = currencyService.getById("USD");
 
         assertEquals("USD", result.getCode());
     }
 
     @Test
     void getById_shouldThrowNotFound() {
+
         when(currencyRepository.findById("USD"))
                 .thenReturn(Optional.empty());
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> currencyService.getById("USD"));
-
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> currencyService.getById("USD")
+        );
     }
 
+    // =========================
+    // CREATE
+    // =========================
     @Test
     void createCurrency_shouldSave() {
-        Currency currency = new Currency();
-        currency.setCode("USD");
-        currency.setName("US Dollar");
+
+        CurrencyRequestDto request = new CurrencyRequestDto();
+        request.setCode("USD");
+        request.setName("US Dollar");
+
+        Currency entity = new Currency();
+        entity.setCode("USD");
+        entity.setName("US Dollar");
+
+        Currency saved = new Currency();
+        saved.setCode("USD");
+        saved.setName("US Dollar");
+
+        CurrencyResponseDto response = new CurrencyResponseDto();
+        response.setCode("USD");
+        response.setName("US Dollar");
 
         when(currencyRepository.existsById("USD")).thenReturn(false);
-        when(currencyRepository.save(currency)).thenReturn(currency);
+        when(mapper.toEntity(request)).thenReturn(entity);
+        when(currencyRepository.save(entity)).thenReturn(saved);
+        when(mapper.toDto(saved)).thenReturn(response);
 
-        Currency result = currencyService.createCurrency(currency);
+        CurrencyResponseDto result = currencyService.createCurrency(request);
 
         assertEquals("USD", result.getCode());
     }
 
     @Test
     void createCurrency_shouldThrowConflict() {
-        Currency currency = new Currency();
-        currency.setCode("USD");
-        currency.setName("US Dollar");
+
+        CurrencyRequestDto request = new CurrencyRequestDto();
+        request.setCode("USD");
 
         when(currencyRepository.existsById("USD")).thenReturn(true);
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> currencyService.createCurrency(currency));
-
-        assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
+        assertThrows(
+                DuplicateEntityException.class,
+                () -> currencyService.createCurrency(request)
+        );
     }
 
     // =========================
     // UPDATE
     // =========================
-
     @Test
     void updateCurrency_shouldUpdate() {
-        Currency currency = new Currency();
-        currency.setCode("USD");
-        currency.setName("US Dollar");
+
+        CurrencyRequestDto request = new CurrencyRequestDto();
+        request.setCode("USD");
+        request.setName("US Dollar");
+
+        Currency entity = new Currency();
+        entity.setCode("USD");
+
+        Currency saved = new Currency();
+        saved.setCode("USD");
+
+        CurrencyResponseDto response = new CurrencyResponseDto();
+        response.setCode("USD");
 
         when(currencyRepository.existsById("USD")).thenReturn(true);
-        when(currencyRepository.save(currency)).thenReturn(currency);
+        when(mapper.toEntity(request)).thenReturn(entity);
+        when(currencyRepository.save(entity)).thenReturn(saved);
+        when(mapper.toDto(saved)).thenReturn(response);
 
-        Currency result = currencyService.updateCurrency(currency);
+        CurrencyResponseDto result = currencyService.updateCurrency(request);
 
         assertEquals("USD", result.getCode());
     }
 
     @Test
     void updateCurrency_shouldThrowNotFound() {
-        Currency currency = new Currency();
-        currency.setCode("USD");
-        currency.setName("US Dollar");
+
+        CurrencyRequestDto request = new CurrencyRequestDto();
+        request.setCode("USD");
 
         when(currencyRepository.existsById("USD")).thenReturn(false);
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> currencyService.updateCurrency(currency));
-
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> currencyService.updateCurrency(request)
+        );
     }
 
     // =========================
     // DELETE
     // =========================
-
     @Test
     void deleteCurrency_shouldDelete() {
+
         when(currencyRepository.existsById("USD")).thenReturn(true);
 
         currencyService.deleteCurrency("USD");
@@ -128,12 +172,12 @@ class CurrencyServiceTest {
 
     @Test
     void deleteCurrency_shouldThrowNotFound() {
+
         when(currencyRepository.existsById("USD")).thenReturn(false);
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> currencyService.deleteCurrency("USD"));
-
-        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> currencyService.deleteCurrency("USD")
+        );
     }
 }

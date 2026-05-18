@@ -19,6 +19,9 @@
 - MQTT 非同步訊息處理
 - RabbitMQ MQTT Broker
 - 排程任務（Scheduler）
+- 系統 API 回應統一使用 ApiResponse<T> 格式
+- DTO 分層設計（Data Transfer Object）
+- 全域例外處理（Global Exception Handler）
 - 單元測試與整合測試
 
 ---
@@ -54,6 +57,55 @@
 ```text
 CurrencyJob.java
 ```
+
+
+--- 
+## 🧾 DTO 分層設計（Data Transfer Object）
+
+為了避免 Entity 直接暴露於 API，系統採用 DTO 分層：
+
+🎯 設計目的
+- 避免資料庫結構直接暴露，提升 API 安全性
+- 清楚區分 Request / Response
+- 支援未來 API 擴展
+
+
+--- 
+## 📡 統一 API 回應格式（ApiResponse）
+
+系統所有 API 回應統一使用 ApiResponse<T> 格式。
+
+🎯 設計目的
+- 統一前後端溝通格式
+- 提升 API 可讀性與一致性
+- 支援錯誤碼與訊息管理
+- 方便前端處理狀態
+
+```json
+{
+  "success": true,
+  "message": "SUCCESS",
+  "code": 200,
+  "data": {}
+}
+```
+
+範例：
+- `ApiResponse.java`
+
+
+--- 
+## ⚠️ 全域例外處理（Global Exception Handler）
+
+系統導入 @RestControllerAdvice 統一處理錯誤。
+
+🎯 設計目的
+- 集中管理 Exception
+- 統一錯誤回應格式
+- 提升維護性
+
+範例：
+- `GlobalExceptionHandler.java`
 
 ---
 
