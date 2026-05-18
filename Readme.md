@@ -11,18 +11,36 @@
 
 ## 📌 專案介紹
 
-本專案為一個基於 **Spring Boot** 建立的後端練習專案，  
-透過 RESTful API 提供幣別（Currency）資料 CRUD 操作，  
-並整合：
+本專案為基於 Spring Boot 建立的後端練習專案，  
+提供 Currency（幣別）資料的 RESTful CRUD API，  
+並整合資料庫、MQTT 訊息處理、排程任務與完整測試架構。
 
-- Microsoft SQL Server
+專案採用典型分層式架構（Layered Architecture），
+將 Controller、Service、Repository、DTO 與 Exception Handling 分離，
+提升系統可維護性、擴展性與測試性。
+
+### 🔹 Core Features
+
+- RESTful API CRUD Operations
+- Microsoft SQL Server 整合
+- Spring Data JPA / Hibernate
 - MQTT 非同步訊息處理
 - RabbitMQ MQTT Broker
-- 排程任務（Scheduler）
-- 系統 API 回應統一使用 ApiResponse<T> 格式
-- DTO 分層設計（Data Transfer Object）
-- 全域例外處理（Global Exception Handler）
-- 單元測試與整合測試
+- Scheduler Background Jobs
+- DTO Layer Separation
+- Unified ApiResponse Format
+- Global Exception Handling
+- Unit Test & Integration Test
+
+### 🔹 Technical Highlights
+
+- 使用 DTO 隔離 Entity 與 API 資料結構
+- 使用 `@RestControllerAdvice` 統一例外處理
+- 採用 Event-Driven Messaging 處理 MQTT 訊息
+- Scheduler 自動執行背景同步任務
+- Integration Test 驗證完整 API Flow
+- 使用 Maven 管理依賴與建置流程
+
 
 ---
 
@@ -186,7 +204,7 @@ JAVA.SPRING.BOOT/
 │  ├─ main/
 │  │  ├─ java/
 │  │  │  └─ training/web/
-│  │  │      ├─ config/           # Spring 與 MQTT 設定
+│  │  │      ├─ config/           # MQTT Pub/Sub Component
 │  │  │      ├─ controller/       # REST API Controller
 │  │  │      ├─ dto/              # Request / Response DTO
 │  │  │      ├─ entity/           # JPA Entity
@@ -224,28 +242,44 @@ JAVA.SPRING.BOOT/
 
 ## 📖 學習重點
 
-- **建立 RESTful API**  
-  使用 `@RestController`、`@GetMapping`、`@PostMapping`、`@PutMapping`、`@DeleteMapping` 建立完整 CRUD API。  
+### 🔹 RESTful API Design
+- 使用 Spring Boot 建立完整 CRUD API
+- 透過 `@RestController` 與 Mapping Annotation 實作 RESTful 架構
+- 統一 API Response 格式，提升前後端整合一致性
 
-- **與資料庫整合 (JPA / Hibernate)**  
-  - 使用 `@Entity` 對應資料表  
-  - 使用 `@Table` 與 `@Column` 設定表格名稱與欄位名稱  
-  - Spring Data Repository 操作資料庫 (CrudRepository、findById、save、deleteById)  
-  - Hibernate 自動處理 SQL 查詢與交易管理  
+### 🔹 Layered Architecture
+- 採用 Controller → Service → Repository 分層設計
+- 將商業邏輯與資料存取分離，提升維護性與擴展性
+- 使用 DTO 隔離 API 與 Entity
 
-- **MQTT 非同步訊息處理**
-  - MQTT Publisher 發送訊息
-  - MQTT Subscriber 接收訊息
-  - RabbitMQ MQTT Plugin 作為 Broker
-  - Event Driven 非同步架構
+### 🔹 Database Integration
+- 使用 Spring Data JPA 與 Hibernate 操作 SQL Server
+- 透過 Entity Mapping 管理資料表關聯
+- Hibernate 自動處理 SQL 與 Transaction Management
 
-- **Maven 專案管理**  
-  - 自動下載與管理專案依賴套件 (Spring Boot、SQL Server Driver 等)  
-  - 管理專案版本與模組，方便團隊協作  
-  - 提供編譯、測試、打包指令，如 `mvn clean install` 與 `mvn package`  
+### 🔹 MQTT Event-Driven Messaging
+- 整合 MQTT Publisher / Subscriber
+- 使用 RabbitMQ MQTT Plugin 作為 Message Broker
+- 實作非同步事件驅動架構（Event-Driven Architecture）
 
-- **Spring Boot 與 SQL Server 連線設定**  
-  - application.yml 設定資料庫連線、JPA 參數與 Hibernate 行為
+### 🔹 Scheduler & Background Jobs
+- 使用 Spring Scheduler 執行定時任務
+- 自動化背景資料同步與 MQTT 訊息推送
+
+### 🔹 Exception Handling
+- 使用 `@RestControllerAdvice` 統一管理例外處理
+- 建立一致化錯誤回應格式
+- 提升 API 可維護性與除錯效率
+
+### 🔹 Testing
+- 使用 JUnit 5 撰寫 Unit Test 與 Integration Test
+- 驗證 Service 邏輯與完整 API Flow
+- 提升系統穩定性與程式品質
+
+### 🔹 Maven Project Management
+- 使用 Maven 管理依賴與建置流程
+- 支援專案編譯、測試與封裝
+- 提供一致化開發環境
 
 ---
 
