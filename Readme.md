@@ -182,61 +182,43 @@ Scheduler Job
 
 ```text
 JAVA.SPRING.BOOT/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── training/web/
-│   │   │       ├── config/
-│   │   │       │   ├── MqttConfig.java
-│   │   │       │   ├── MqttProperties.java
-│   │   │       │   └── MqttPublisher.java
-│   │   │       │
-│   │   │       ├── controller/
-│   │   │       │   └── CurrencyController.java
-│   │   │       │
-│   │   │       ├── dto/
-│   │   │       │   └── CurrencyMessageDto.java
-│   │   │       │
-│   │   │       ├── entity/
-│   │   │       │   └── Currency.java
-│   │   │       │
-│   │   │       ├── job/
-│   │   │       │   └── CurrencyJob.java
-│   │   │       │
-│   │   │       ├── mqtt/
-│   │   │       │   └── CurrencyConsumerHandler.java
-│   │   │       │
-│   │   │       ├── repository/
-│   │   │       │   └── CurrencyRepository.java
-│   │   │       │
-│   │   │       ├── service/
-│   │   │       │   └── CurrencyService.java
-│   │   │       │
-│   │   │       └── Hello.java
-│   │   │
-│   │   └── resources/
-│   │       └── application.yml
-│   │
-│   ├── test/
-│   │   ├── java/
-│   │   │   └── training/web/
-│   │   │       ├── integration/
-│   │   │       │   └── CurrencyIntegrationTest.java
-│   │   │       │
-│   │   │       └── service/
-│   │   │           └── CurrencyServiceTest.java
-│   │   │
-│   │   └── resources/
-│   │       └── application-test.yml
-│   │
-│   └── static/
-│       ├── imgs/
-│       └── test.html
+├─ src/
+│  ├─ main/
+│  │  ├─ java/
+│  │  │  └─ training/web/
+│  │  │      ├─ config/           # Spring 與 MQTT 設定
+│  │  │      ├─ controller/       # REST API Controller
+│  │  │      ├─ dto/              # Request / Response DTO
+│  │  │      ├─ entity/           # JPA Entity
+│  │  │      ├─ enums/            # 系統列舉與狀態碼
+│  │  │      ├─ exception/        # 全域例外處理
+│  │  │      ├─ job/              # Scheduler 排程任務
+│  │  │      ├─ mapper/           # Entity 與 DTO 轉換
+│  │  │      ├─ mqtt/             # MQTT Consumer Handler
+│  │  │      ├─ repository/       # JPA Repository
+│  │  │      ├─ service/          # 商業邏輯層
+│  │  │      └─ Hello.java        # Spring Boot 啟動入口
+│  │  │
+│  │  └─ resources/
+│  │      └─ application.yml      # 系統設定檔
+│  │
+│  └─ test/
+│      ├─ java/
+│      │  └─ training/web/
+│      │      ├─ integration/     # Integration Test
+│      │      └─ service/         # Unit Test
+│      │
+│      └─ resources/
+│          └─ application-test.yml
 │
-├── target/
-├── .gitignore
-├── pom.xml
-└── Readme.md
+├─ static/                        # 靜態測試資源
+│  ├─ imgs/
+│  └─ test.html
+│
+├─ pom.xml                        # Maven 專案設定
+├─ README.md                      # 專案說明文件
+└─ .gitignore
+
 ```
 ---
 
