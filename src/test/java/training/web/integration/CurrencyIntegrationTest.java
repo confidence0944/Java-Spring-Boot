@@ -15,6 +15,7 @@ import training.web.repository.CurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import training.web.dto.ApiResponse;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -70,9 +71,11 @@ class CurrencyApiIntegrationTest {
                 .andReturn();
 
         String json = result.getResponse().getContentAsString();
-
-        List<CurrencyResponseDto> datas = mapper.readValue(json, new TypeReference<List<CurrencyResponseDto>>() {
-        });
+        
+        ApiResponse<List<CurrencyResponseDto>> response = mapper.readValue(json, 
+            new TypeReference<ApiResponse<List<CurrencyResponseDto>>>() {});
+        
+        List<CurrencyResponseDto> datas = response.getData();
 
         assertEquals(3, datas.size());
 

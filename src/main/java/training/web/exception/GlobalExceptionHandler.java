@@ -4,7 +4,6 @@ import training.web.Enums.ReturnCode;
 import training.web.dto.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import jakarta.validation.ConstraintViolationException;
 
@@ -31,7 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<?> handleConstraint(ConstraintViolationException ex) {
-        return ApiResponse.error(ReturnCode.BAD_REQUEST, ex.getMessage());
+        String msg = ex.getConstraintViolations()
+                .stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .findFirst()
+                .orElse(ex.getMessage());
+        return ApiResponse.error(ReturnCode.VALIDATION_FAILED, msg);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

@@ -21,15 +21,16 @@
 
 ### 🔹 Core Features
 
-- RESTful API CRUD Operations
+- RESTful API CRUD
 - Microsoft SQL Server 整合
 - Spring Data JPA / Hibernate
 - MQTT 非同步訊息處理
 - RabbitMQ MQTT Broker
 - Scheduler Background Jobs
-- DTO Layer Separation
-- Unified ApiResponse Format
-- Global Exception Handling
+- DTO Layer Separation  (DTO 分層設計)
+- Unified ApiResponse Format (統一Api回傳格式)
+- Global Request Body Validation (全域Request Body驗證)
+- Global Exception Handling  (全域Exception 處理機制)
 - Unit Test & Integration Test
 
 ### 🔹 Technical Highlights
@@ -124,6 +125,37 @@ CurrencyJob.java
 
 範例：
 - `GlobalExceptionHandler.java`
+
+---
+
+## 🔐 全域請求體驗證（Global Request Body Validation）
+
+系統導入 `RequestBodyValidationAdvice` 統一驗證所有 `@RequestBody` 參數，類似 ASP.NET ActionFilter 機制。
+
+🎯 設計目的
+- 集中管理請求體驗證邏輯
+- 減少 Controller 重複驗證代碼
+- 統一驗證錯誤回應格式
+- 提升代碼可維護性
+
+### 📋 驗證流程
+
+1. **請求進入**：API 接收 `@RequestBody` 參數
+2. **RequestBodyValidationAdvice 攔截**：所有 @RequestBody 參數自動進入驗證層
+3. **Bean Validation 檢查**：根據 DTO 上的驗證註解（如 `@NotBlank`）驗證
+4. **錯誤處理**：若驗證失敗，拋出 `ConstraintViolationException`
+5. **全域例外處理**：`GlobalExceptionHandler` 捕捉錯誤，回傳統一格式的 `ApiResponse.error(...)`
+
+**3. 驗證失敗回應範例：**
+
+```json
+{
+  "success": false,
+  "message": "參數驗證失敗 - code: code is required",
+  "code": 422,
+  "data": null
+}
+```
 
 ---
 
@@ -270,6 +302,13 @@ JAVA.SPRING.BOOT/
 - 使用 `@RestControllerAdvice` 統一管理例外處理
 - 建立一致化錯誤回應格式
 - 提升 API 可維護性與除錯效率
+
+### 🔹 Global Request Body Validation
+- 使用 `RequestBodyValidationAdvice` 集中驗證所有 `@RequestBody`
+- 類似 ASP.NET ActionFilter 機制
+- 減少重複驗證代碼，提升維護性
+- 支援 Jakarta Bean Validation 標準註解（`@NotBlank`, `@NotNull` 等）
+- 統一驗證失敗回應格式
 
 ### 🔹 Testing
 - 使用 JUnit 5 撰寫 Unit Test 與 Integration Test
